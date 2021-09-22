@@ -41,7 +41,7 @@ module Rpush
               'token' => device_token
             }
             json['content_available'] = content_available if content_available
-            json['notification'] = alert if alert
+            json['notification'] = notification_payload if notification
             { 'message' => json }
           end
 
@@ -75,6 +75,13 @@ module Rpush
             else
               'PRIORITY_DEFAULT'
             end
+          end
+
+          def notification_payload
+            keys = [:title, :body, :image]
+            payload = notification || {}
+
+            payload.slice(*keys, *keys.map(&:to_s))
           end
         end
       end
