@@ -42,6 +42,7 @@ module Rpush
             }
             json['content_available'] = content_available if content_available
             json['notification'] = notification_payload if notification
+            json['fcm_options'] = {analytics_label: data[:analytics_label]} if data[:analytics_label]
             { 'message' => json }
           end
 
