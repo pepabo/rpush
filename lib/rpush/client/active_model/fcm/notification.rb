@@ -38,10 +38,11 @@ module Rpush
             json = {
               'data' => data,
               'android' => android_config,
+              'apns' => apns_config,
               'token' => device_token
             }
             json['content_available'] = content_available if content_available
-            json['notification'] = alert if alert
+            json['notification'] = notification_payload if notification
             { 'message' => json }
           end
 
@@ -64,6 +65,13 @@ module Rpush
             json
           end
 
+          def apns_config
+            json = {}
+            json['payload'] = { 'aps' => { 'mutable-content' => 1 } } if mutable_content
+            json['fcm_options'] = { 'image' => notification_payload['image'] } if mutable_content
+            json
+          end
+
           def priority_for_notification
             case priority
             when 0 then 'PRIORITY_UNSPECIFIED'
@@ -75,6 +83,13 @@ module Rpush
             else
               'PRIORITY_DEFAULT'
             end
+          end
+
+          def notification_payload
+            keys = [:title, :body, :image]
+            payload = notification || {}
+
+            payload.slice(*keys, *keys.map(&:to_s))
           end
         end
       end
