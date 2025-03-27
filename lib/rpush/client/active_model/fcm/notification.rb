@@ -72,6 +72,7 @@ module Rpush
           def apns_config
             json = ActiveSupport::OrderedHash.new
             json['payload'] = ActiveSupport::OrderedHash.new
+            json['fcm_options'] = { 'image' => notification_payload['image'] } if mutable_content
 
             aps = ActiveSupport::OrderedHash.new
             aps['mutable-content'] = 1 if mutable_content
@@ -122,6 +123,13 @@ module Rpush
             else
               'PRIORITY_DEFAULT'
             end
+          end
+
+          def notification_payload
+            keys = [:title, :body, :image]
+            payload = notification || {}
+
+            payload.slice(*keys, *keys.map(&:to_s))
           end
         end
       end
